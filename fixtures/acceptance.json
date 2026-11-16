@@ -1,0 +1,158 @@
+{
+  "scenario": "人工智能治理政策版本影响评估平台",
+  "synthetic": true,
+  "records": [
+    {
+      "record_id": "policy_measure-001",
+      "payload": {
+        "policy_code": "policy_code-0",
+        "jurisdiction_level": "jurisdiction_level-1",
+        "measure_type": "measure_type-2",
+        "covered_entities": 17.7,
+        "implementation_intensity": 19.6,
+        "baseline_risk": 21.5,
+        "post_risk": 23.4,
+        "missing_rate": 0.25,
+        "enforcement_support": 0.36,
+        "digital_capacity": 0.47,
+        "affected_group": "affected_group-0",
+        "consultation_coverage": 0.69
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-002",
+      "payload": {
+        "policy_code": "policy_code-1",
+        "jurisdiction_level": "jurisdiction_level-2",
+        "measure_type": "measure_type-3",
+        "covered_entities": 21.4,
+        "implementation_intensity": 23.3,
+        "baseline_risk": 25.2,
+        "post_risk": 27.1,
+        "missing_rate": 0.36,
+        "enforcement_support": 0.47,
+        "digital_capacity": 0.58,
+        "affected_group": "affected_group-1",
+        "consultation_coverage": 0.8
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-003",
+      "payload": {
+        "policy_code": "policy_code-2",
+        "jurisdiction_level": "jurisdiction_level-3",
+        "measure_type": "measure_type-4",
+        "covered_entities": 25.1,
+        "implementation_intensity": 27.0,
+        "baseline_risk": 28.9,
+        "post_risk": 30.8,
+        "missing_rate": 0.47,
+        "enforcement_support": 0.58,
+        "digital_capacity": 0.69,
+        "affected_group": "affected_group-2",
+        "consultation_coverage": 0.91
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-004",
+      "payload": {
+        "policy_code": "policy_code-3",
+        "jurisdiction_level": "jurisdiction_level-4",
+        "measure_type": "measure_type-0",
+        "covered_entities": 28.8,
+        "implementation_intensity": 30.7,
+        "baseline_risk": 32.6,
+        "post_risk": 34.5,
+        "missing_rate": 0.58,
+        "enforcement_support": 0.69,
+        "digital_capacity": 0.8,
+        "affected_group": "affected_group-3",
+        "consultation_coverage": 0.25
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-005",
+      "payload": {
+        "policy_code": "policy_code-4",
+        "jurisdiction_level": "jurisdiction_level-0",
+        "measure_type": "measure_type-1",
+        "covered_entities": 32.5,
+        "implementation_intensity": 34.4,
+        "baseline_risk": 36.3,
+        "post_risk": 38.2,
+        "missing_rate": 0.69,
+        "enforcement_support": 0.8,
+        "digital_capacity": 0.91,
+        "affected_group": "affected_group-4",
+        "consultation_coverage": 0.36
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-006",
+      "payload": {
+        "policy_code": "policy_code-0",
+        "jurisdiction_level": "jurisdiction_level-1",
+        "measure_type": "measure_type-2",
+        "covered_entities": 36.2,
+        "implementation_intensity": 38.1,
+        "baseline_risk": 40.0,
+        "post_risk": 41.9,
+        "missing_rate": 0.8,
+        "enforcement_support": 0.91,
+        "digital_capacity": 0.25,
+        "affected_group": "affected_group-0",
+        "consultation_coverage": 0.47
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-007",
+      "payload": {
+        "policy_code": "policy_code-1",
+        "jurisdiction_level": "jurisdiction_level-2",
+        "measure_type": "measure_type-3",
+        "covered_entities": 39.9,
+        "implementation_intensity": 41.8,
+        "baseline_risk": 43.7,
+        "post_risk": 45.6,
+        "missing_rate": 0.91,
+        "enforcement_support": 0.25,
+        "digital_capacity": 0.36,
+        "affected_group": "affected_group-1",
+        "consultation_coverage": 0.58
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    },
+    {
+      "record_id": "policy_measure-008",
+      "payload": {
+        "policy_code": "policy_code-2",
+        "jurisdiction_level": "jurisdiction_level-3",
+        "measure_type": "measure_type-4",
+        "covered_entities": 43.6,
+        "implementation_intensity": 45.5,
+        "baseline_risk": 47.4,
+        "post_risk": 49.3,
+        "missing_rate": 0.25,
+        "enforcement_support": 0.36,
+        "digital_capacity": 0.47,
+        "affected_group": "affected_group-2",
+        "consultation_coverage": 0.69
+      },
+      "state": "registered",
+      "source": "synthetic-local-acceptance"
+    }
+  ]
+}
