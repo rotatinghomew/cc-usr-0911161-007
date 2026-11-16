@@ -7,6 +7,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from policy_impact.measures.policy_contract import DomainRecord, bounded, finite_number, normalized_text, stable_hash
 from policy_impact.comparability.evidence_gate import evaluate, summarize
+from policy_impact.analysis.counterfactual import adjusted_effect
 
 MetricFunction = Callable[[DomainRecord, Mapping[str, Any]], float]
 
@@ -609,9 +610,13 @@ def record_score(record: DomainRecord, context: Mapping[str, Any] | None = None)
     rule_summary = summarize(rules)
     metrics = grouped_metrics(record, context)
     metric_score = statistics.fmean(metrics.values()) if metrics else 0.0
-    combined = bounded(rule_summary['score'] * 0.55 + metric_score * 0.45)
-    return {'score': combined, 'rule_summary': rule_summary, 'metrics': metrics,
-            'fingerprint': stable_hash({'record': record.fingerprint, 'metrics': metrics, 'rules': rule_summary})}
+    effect = adjusted_effect(record)
+    effect_component = bounded(0.5 + effect['adjusted'] * 0.5)
+    combined = bounded(rule_summary['score'] * 0.45 + metric_score * 0.35 + effect_component * 0.20)
+    return {'score': combined, 'rule_summary': rule_summary, 'metrics': metrics, 'effect': effect,
+            'fingerprint': stable_hash({'record': record.fingerprint, 'metrics': metrics,
+                                        'rules': rule_summary, 'effect': effect['adjusted'],
+                                        'effect_verdict': effect['verdict']})}
 
 def portfolio(records: Iterable[DomainRecord], context: Mapping[str, Any] | None = None) -> dict[str, Any]:
     rows = [record_score(record, context) | {'record_id': record.record_id} for record in records]
@@ -625,5 +630,10 @@ def compare(left: DomainRecord, right: DomainRecord, context: Mapping[str, Any] 
     left_metrics = grouped_metrics(left, context)
     right_metrics = grouped_metrics(right, context)
     delta = {key: right_metrics.get(key, 0.0) - left_metrics.get(key, 0.0) for key in sorted(set(left_metrics) | set(right_metrics))}
+    left_effect = adjusted_effect(left)
+    right_effect = adjusted_effect(right)
+    effect_delta = right_effect['adjusted'] - left_effect['adjusted']
     return {'left': left.record_id, 'right': right.record_id, 'delta': delta,
-            'winner': right.record_id if sum(delta.values()) >= 0 else left.record_id}
+            'effect': {'left': left_effect, 'right': right_effect, 'delta': effect_delta},
+            'winner': right.record_id if effect_delta >= 0 else left.record_id,
+            'direction': right_effect['direction'], 'confirmed': right_effect['confirmed']}

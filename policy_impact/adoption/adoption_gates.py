@@ -1137,13 +1137,21 @@ def decide(record: DomainRecord, context: Mapping[str, Any] | None = None) -> De
     context = context or {}
     rules = evaluate(record, context)
     impact_brief = record_score(record, context)
+    effect = impact_brief['effect']
     guards = guard_report(record, context)
     effective_score = impact_brief['score'] * 0.65 + float(context.get('domain_signal', 0.5)) * 0.35 - min(0.2, float(context.get('policy_disparity', 0.0)) * 0.25)
     critical = sum(item.severity == 'critical' for item in rules)
-    if context.get('domain_severity') == 'critical':
+    # Risk direction is authoritative for both monitoring and adoption: a risk
+    # increase can never be approved, and a weak-evidence decrease is never
+    # treated as confirmed improvement.
+    if effect['direction'] == 'worsened' or context.get('signal_direction') == 'worsened':
+        outcome = 'hold'
+    elif context.get('domain_severity') == 'critical':
         outcome = 'hold'
     elif critical:
         outcome = 'hold'
+    elif effect['direction'] == 'improved' and not effect['confirmed']:
+        outcome = 'review'
     elif effective_score >= float(context.get('approve_threshold', 0.62)) and guards['passed'] >= guards['failed']:
         outcome = 'approve'
     elif effective_score >= float(context.get('review_threshold', 0.38)):
@@ -1151,7 +1159,9 @@ def decide(record: DomainRecord, context: Mapping[str, Any] | None = None) -> De
     else:
         outcome = 'reject'
     reasons = (f"score={impact_brief['score']:.6f}", f"critical={critical}",
-               f"guards={guards['passed']}/{guards['passed'] + guards['failed']}")
+               f"guards={guards['passed']}/{guards['passed'] + guards['failed']}",
+               f"effect={effect['verdict']}", f"risk_delta={effect['risk_delta']:.6f}",
+               f"reliability={effect['reliability']:.6f}")
     return Decision(record.record_id, outcome, effective_score, reasons, rules, impact_brief['metrics'])
 
 def advance_for_outcome(record: DomainRecord, decision: Decision) -> DomainRecord:

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from policy_impact.measures.policy_contract import Decision, DomainRecord, canonical_json, stable_hash, utc_now
+from policy_impact.analysis.counterfactual import adjusted_effect, equity_summary, persistence
 
 
 def ensure_output(path: str | Path) -> Path:
@@ -24,11 +25,16 @@ def write_records(path: Path, records: Iterable[DomainRecord], decisions: Mappin
     rows = []
     for record in records:
         decision = decisions.get(record.record_id)
+        effect = adjusted_effect(record)
         rows.append({"record_id": record.record_id, "state": record.state, "version": record.version,
                      "source": record.source, "fingerprint": record.fingerprint,
-                     "outcome": decision.outcome if decision else "", "score": decision.score if decision else ""})
+                     "outcome": decision.outcome if decision else "", "score": decision.score if decision else "",
+                     "direction": effect["direction"], "verdict": effect["verdict"],
+                     "risk_delta": effect["risk_delta"], "reliability": effect["reliability"]})
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["record_id", "state", "version", "source", "fingerprint", "outcome", "score"])
+        writer = csv.DictWriter(handle, fieldnames=["record_id", "state", "version", "source", "fingerprint",
+                                                    "outcome", "score", "direction", "verdict", "risk_delta",
+                                                    "reliability"])
         writer.writeheader()
         writer.writerows(rows)
     return len(rows)
@@ -52,10 +58,23 @@ def build_summary(records: list[DomainRecord], decisions: Mapping[str, Decision]
     for decision in decisions.values():
         outcomes[decision.outcome] = outcomes.get(decision.outcome, 0) + 1
     scores = [decision.score for decision in decisions.values()]
+    effects = [(record.record_id, adjusted_effect(record)) for record in records]
+    directions = {"improved": 0, "worsened": 0, "unchanged": 0}
+    verdicts: dict[str, int] = {}
+    for _, effect in effects:
+        directions[effect["direction"]] += 1
+        verdicts[effect["verdict"]] = verdicts.get(effect["verdict"], 0) + 1
+    equity = equity_summary(records)
+    stability = persistence(records)
     return {"product": '人工智能治理政策版本影响评估平台', "entity": 'policy_measure', "generated_at": utc_now(),
             "record_count": len(records), "decision_count": len(decisions), "outcomes": outcomes,
             "average_score": sum(scores) / len(scores) if scores else 0.0,
             "minimum_score": min(scores) if scores else 0.0, "maximum_score": max(scores) if scores else 0.0,
+            "risk_directions": directions, "effect_verdicts": verdicts,
+            "confirmed_improvements": sum(1 for _, effect in effects if effect["verdict"] == "confirmed_improvement"),
+            "confirmed_worsenings": sum(1 for _, effect in effects if effect["verdict"] == "confirmed_worsening"),
+            "uncertain_records": [record_id for record_id, effect in effects if effect["uncertain"]],
+            "group_summary": equity, "persistence": stability,
             "repository": snapshot}
 
 
